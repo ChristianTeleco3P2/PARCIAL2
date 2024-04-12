@@ -1,0 +1,70 @@
+UFW SERVIDOR
+#
+# rules.before
+#
+# Rules that should be run before the ufw command line added rules. Custom
+# rules should be added to one of these chains:
+#   ufw-before-input
+#   ufw-before-output
+#   ufw-before-forward
+#
+*nat
+:POSTROUTING ACCEPT [0:0]
+
+#-A PREROUTING -p tcp --dport 80 -j DNAT --to-destination 192.168.50.2:80
+-A PREROUTING -p tcp --dport 21 -j DNAT --to-destination 192.168.50.2:21
+
+-A POSTROUTING -s 192.168.50.0/24 -j MASQUERADE
+-A POSTROUTING -s 192.168.1.0/24 -o eth1 -j MASQUERADE
+COMMIT
+
+# Don't delete these required lines, otherwise there will be errors
+*filter
+:ufw-before-input - [0:0]
+:ufw-before-output - [0:0]
+:ufw-before-forward - [0:0]
+:ufw-not-local - [0:0]
+# End required lines
+
+vagrant@servidor:~$ sudo ufw status
+Status: active
+
+To                         Action      From
+--                         ------      ----
+22/tcp                     ALLOW       Anywhere
+Apache Full                ALLOW       Anywhere
+443                        ALLOW       Anywhere
+21/tcp                     ALLOW       Anywhere
+20/tcp                     ALLOW       Anywhere
+990/tcp                    ALLOW       Anywhere
+40000:50000/tcp            ALLOW       Anywhere
+853/tcp                    ALLOW       Anywhere
+Bind9                      ALLOW       Anywhere
+22/tcp (v6)                ALLOW       Anywhere (v6)
+Apache Full (v6)           ALLOW       Anywhere (v6)
+443 (v6)                   ALLOW       Anywhere (v6)
+21/tcp (v6)                ALLOW       Anywhere (v6)
+20/tcp (v6)                ALLOW       Anywhere (v6)
+990/tcp (v6)               ALLOW       Anywhere (v6)
+40000:50000/tcp (v6)       ALLOW       Anywhere (v6)
+853/tcp (v6)               ALLOW       Anywhere (v6)
+Bind9 (v6)                 ALLOW       Anywhere (v6)
+
+CLIENTE
+#rsa_cert_file=/etc/ssl/certs/ssl-cert-snakeoil.pem
+#rsa_private_key_file=/etc/ssl/private/ssl-cert-snakeoil.key
+rsa_cert_file=/etc/ssl/private/christian.pem
+rsa_private_key_file=/etc/ssl/private/christian.pem
+ssl_enable=YES
+allow_anon_ssl=NO
+force_local_data_ssl=YES
+force_local_logins_ssl=YES
+ssl_tlsv1=YES
+ssl_sslv2=NO
+ssl_sslv3=NO
+require_ssl_reuse=NO
+ssl_ciphers=HIGH
+pasv_promiscuous=YES
+#
+# Uncomment this to indicate that vsftpd use a utf8 filesystem.
+#utf8_filesystem=YES
